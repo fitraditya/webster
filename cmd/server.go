@@ -58,7 +58,9 @@ func serverRun(cmd *cobra.Command, args []string) error {
 		log.For("server", "run").Info("Starting websocket server")
 
 		if err := server.ListenAndServe(); err != nil {
-			log.For("server", "run").Error(err)
+			if err != http.ErrServerClosed {
+				log.For("server", "run").Error(err)
+			}
 		}
 	}()
 
