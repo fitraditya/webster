@@ -6,16 +6,30 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/logutils"
+	"github.com/hashicorp/memberlist"
 	"github.com/obrel/go-lib/pkg/log"
 	"github.com/spf13/viper"
 )
 
 func GetNodeName() string {
-	if viper.GetString("node.name") != "" {
-		return viper.GetString("node.name")
+	if name := viper.GetString("node.name"); name != "" {
+		return name
 	}
 
 	return uuid.NewString()
+}
+
+func GetNodeConfig() *memberlist.Config {
+	config := viper.GetString("node.config")
+
+	switch config {
+	case "lan":
+		return memberlist.DefaultLANConfig()
+	case "wan":
+		return memberlist.DefaultWANConfig()
+	default:
+		return memberlist.DefaultLocalConfig()
+	}
 }
 
 func GetLogLevel() *logutils.LevelFilter {

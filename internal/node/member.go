@@ -10,7 +10,7 @@ import (
 )
 
 func CreateMemberList(ctx context.Context, delegate *Delegate, port int, join string) (*memberlist.Memberlist, error) {
-	c := memberlist.DefaultLocalConfig()
+	c := config.GetNodeConfig()
 	c.Name = config.GetNodeName()
 	c.BindPort = port
 	c.Delegate = delegate
