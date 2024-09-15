@@ -7,9 +7,15 @@
         var output = document.getElementById("output");
         var input = document.getElementById("input");
         var ws;
+        var isConnected = false;
+        var isRegistered = false;
+        var date = function() {
+          var d = new Date();
+          return d.toLocaleString().replace("T"," ").substring(0, 19);
+        }
         var print = function(message) {
           var d = document.createElement("div");
-          d.textContent = message;
+          d.innerHTML = "[" + date() + "]" + " " + message;
           output.appendChild(d);
           output.scroll(0, output.scrollHeight);
         };
@@ -20,13 +26,21 @@
           ws = new WebSocket("{{.}}");
           ws.onopen = function(evt) {
             print("CONNECT");
+            isConnected = true;
           }
           ws.onclose = function(evt) {
             print("CLOSE");
+            isConnected = false;
+            isRegistered = false;
             ws = null;
           }
           ws.onmessage = function(evt) {
             print("RESPONSE: " + evt.data);
+            res = JSON.parse(evt.data);
+            switch (res.response) {
+              case "register":
+                isRegistered = res.data.success;
+            }
           }
           ws.onerror = function(evt) {
             print("ERROR: " + evt.data);
@@ -34,7 +48,7 @@
           return false;
         };
         document.getElementById("register").onclick = function(evt) {
-          if (!ws) {
+          if (!ws && !isConnected) {
             return false;
           }
           print("REGISTER");
@@ -45,7 +59,7 @@
           return false;
         };
         document.getElementById("send").onclick = function(evt) {
-          if (!ws) {
+          if (!ws && !isConnected && !isRegistered) {
             return false;
           }
           print("SEND: " + input.value);
@@ -69,7 +83,7 @@
   <body>
     <table>
       <tr>
-        <td valign="top" width="50%">
+        <td valign="top" width="25%">
           <p>
             <ul>
               <li>Click "Connect" to create a connection to the websocket server</li>
@@ -87,8 +101,8 @@
               <button id="send">Send</button>
           </form>
         </td>
-        <td>&nbsp;&nbsp;</td>
-        <td valign="top" width="50%">
+        <td width="5%"></td>
+        <td valign="top" width="70%">
           <div id="output" style="max-height: 70vh;overflow-y: scroll;"></div>
         </td>
       </tr>
