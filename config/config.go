@@ -1,9 +1,11 @@
 package config
 
 import (
+	"os"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/hashicorp/logutils"
 	"github.com/obrel/go-lib/pkg/log"
 	"github.com/spf13/viper"
 )
@@ -14,6 +16,22 @@ func GetNodeName() string {
 	}
 
 	return uuid.NewString()
+}
+
+func GetLogLevel() *logutils.LevelFilter {
+	level := "WARN"
+
+	if viper.GetString("log.level") != "" {
+		level = viper.GetString("log.level")
+	}
+
+	filter := &logutils.LevelFilter{
+		Levels:   []logutils.LogLevel{"DEBUG", "WARN", "ERROR"},
+		MinLevel: logutils.LogLevel(level),
+		Writer:   os.Stderr,
+	}
+
+	return filter
 }
 
 func init() {
