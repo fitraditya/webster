@@ -50,6 +50,6 @@ require (
 	github.com/hashicorp/memberlist v0.5.1
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/obrel/go-lib v0.0.0-20220721023024-3cc10c3cebed
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 )
