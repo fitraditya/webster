@@ -56,8 +56,8 @@ $ go run main.go server -a 0.0.0.0:4001 -p 2501 -c lan
 If you run the websocket cluster in different public server, you can use `wan` option.
 
 ## To Do
-[ ] Authentication
-[ ] Channel based message subscription
-[ ] Docker and kubernetes deployment
+- [ ] Authentication
+- [ ] Channel based message subscription
+- [ ] Docker and kubernetes deployment
 
 
