@@ -15,6 +15,7 @@ func CreateMemberList(ctx context.Context, delegate *Delegate, port int, join st
 	c.BindPort = port
 	c.Delegate = delegate
 	c.LogOutput = config.GetLogLevel()
+	c.AdvertisePort = c.BindPort
 
 	list, err := memberlist.Create(c)
 
