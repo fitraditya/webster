@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/logutils"
 	"github.com/hashicorp/memberlist"
 	"github.com/obrel/go-lib/pkg/log"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -48,13 +49,13 @@ func GetLogLevel() *logutils.LevelFilter {
 	return filter
 }
 
-func init() {
+func Init(flag *pflag.FlagSet) {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
 	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "."))
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -64,4 +65,16 @@ func init() {
 			log.For("config", "init").Fatal(err)
 		}
 	}
+
+	bindFlags(flag)
+}
+
+func bindFlags(flag *pflag.FlagSet) {
+	flag.VisitAll(func(f *pflag.Flag) {
+		configName := strings.ReplaceAll(f.Name, "-", ".")
+
+		if f.Changed && !viper.IsSet(configName) {
+			viper.BindPFlag(configName, f)
+		}
+	})
 }

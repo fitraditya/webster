@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/fitraditya/webster/config"
 	"github.com/fitraditya/webster/internal/handler"
 	"github.com/fitraditya/webster/internal/hub"
 	"github.com/fitraditya/webster/internal/node"
@@ -18,12 +19,13 @@ import (
 )
 
 var (
-	nodePort  int
-	nodeJoin  string
-	address   string
-	list      *memberlist.Memberlist
-	delegate  *node.Delegate
-	serverCmd = &cobra.Command{
+	nodePort   int
+	nodeJoin   string
+	nodeConfig string
+	address    string
+	list       *memberlist.Memberlist
+	delegate   *node.Delegate
+	serverCmd  = &cobra.Command{
 		Use:   "server",
 		Short: "Run websocket cluster",
 	}
@@ -32,6 +34,7 @@ var (
 func serverPreRun(cmd *cobra.Command, args []string) error {
 	var err error
 
+	config.Init(cmd.Flags())
 	delegate = node.NewDelegate()
 
 	list, err = node.CreateMemberList(cmd.Context(), delegate, nodePort, nodeJoin)
@@ -109,7 +112,8 @@ func handleExitSignal(s *http.Server, m *memberlist.Memberlist) error {
 func init() {
 	serverCmd.RunE = serverRun
 	serverCmd.PreRunE = serverPreRun
-	serverCmd.PersistentFlags().StringVarP(&address, "address", "a", "0.0.0.0:4000", "Websocket address")
-	serverCmd.PersistentFlags().IntVarP(&nodePort, "port", "p", 2500, "Node port")
-	serverCmd.PersistentFlags().StringVarP(&nodeJoin, "join", "j", "", "Node to join")
+	serverCmd.PersistentFlags().StringVarP(&address, "ws-address", "a", "0.0.0.0:4000", "Websocket address")
+	serverCmd.PersistentFlags().IntVarP(&nodePort, "node-port", "p", 2500, "Node port")
+	serverCmd.PersistentFlags().StringVarP(&nodeJoin, "node-join", "j", "", "Node to join")
+	serverCmd.PersistentFlags().StringVarP(&nodeConfig, "node-config", "c", "", "Node config type")
 }
